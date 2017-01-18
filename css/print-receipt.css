@@ -33,7 +33,6 @@
 /**
  * used this css in print fees receipt.
  */
-
 #pcr .table {
 	width:70%;
 	border:1px solid black;
@@ -42,6 +41,7 @@
 }
 .table-main td,th {
 	border:none;
+        height:30px;
 }
 .table-border td,th {
 	border:1px solid black;
@@ -84,6 +84,11 @@
 }
 
 @media print {
+#pcr
+{
+    width:50%;
+}    
+    
 #pcr .table {
   width: 100% !important;
 }
@@ -92,7 +97,7 @@
 }
 @page{
   margin-top:35px !important;
-  margin-left:35px;
+  margin-left:15px;
   margin-right:35px;
 }
 }
