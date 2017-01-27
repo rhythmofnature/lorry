@@ -7,6 +7,8 @@ use app\modules\business\models\Trips;
 use app\modules\business\models\TripsSearch;
 use app\modules\business\models\MaterialTypes;
 use app\modules\business\models\BalanceSheet;
+use app\modules\business\models\VehicleDetails;
+use app\modules\business\models\DriverDetails;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -72,8 +74,8 @@ class TripsController extends Controller
                             $model = new Trips();
                             $model->load(Yii::$app->request->post());
                             $material_id=$model->material_id;
-                            $material_type=MaterialTypes::findOne($material_id);
-                            $model->measurement_type=$material_type->measurement_type;
+                            /*$material_type=MaterialTypes::findOne($material_id);
+                            $model->measurement_type=$material_type->measurement_type;*/
                             $model->date_of_travel = date("Y-m-d H:i:s",strtotime($model->date_of_travel));
                             $model->buyer_amount=$model->buyer_amount_total-$model->vehicle_rent;
                             $model->save();
@@ -109,8 +111,8 @@ class TripsController extends Controller
 			BalanceSheet::deleteAll('trip_id = :trip_id', [':trip_id' => $model->id]);
 			$model->trip_count = 1;
 			$material_id=$model->material_id;
-			$material_type=MaterialTypes::findOne($material_id);
-			$model->measurement_type=$material_type->measurement_type;
+			/*$material_type=MaterialTypes::findOne($material_id);
+			$model->measurement_type=$material_type->measurement_type;*/
 			$model->date_of_travel = date("Y-m-d H:i:s",strtotime($model->date_of_travel));
 			if($model->save()){
             	return $this->redirect(['index']);
@@ -177,5 +179,42 @@ class TripsController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+    
+    public function actionAjax()
+    {
+     $vehicle_id =  $_POST['vehicle_id'];
+     $return = array(
+                    "driver_name"=>'',
+                    "driver_phone"=>'',
+                    "owner_name"=>'',
+                    "owner_phone"=>''
+                    );     
+     
+     if(!$vehicle_id) {echo json_encode($return);exit;}
+     list($v_name,$v_number) = explode(" - ",$vehicle_id);
+     
+     $return = array(
+                    "driver_name"=>'',
+                    "driver_phone"=>'',
+                    "owner_name"=>'',
+                    "owner_phone"=>''
+                    );
+     
+     $v_details = VehicleDetails::find()->where(['name' => $v_name,'vehicle_number'=>$v_number])->one();
+     
+     if($v_details)
+     {
+     $return["owner_name"] = $v_details->owner_name;
+     $return["owner_phone"] = $v_details->owner_phone;
+     
+     $d_details = DriverDetails::find()->where(['customer_type' => 3,'vehicle'=>$v_details->id])->one();   
+     if($d_details)
+     {
+      $return["driver_name"] = $d_details->name;
+      $return["driver_phone"] = $d_details->phone;
+     }
+     }
+     echo json_encode($return);
     }
 }

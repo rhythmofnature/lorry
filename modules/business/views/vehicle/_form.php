@@ -36,19 +36,22 @@ use app\modules\business\models\VehicleDetails;
     </div>
 
     <div class="col-xs-12 col-sm-6 col-lg-6">
-       <?= $form->field($model, 'size')->textInput(['maxlength' => 250]) ?>
+       <?= $form->field($model, 'owner_name')->textInput(['maxlength' => 250]) ?>
     </div>
    </div>
 
     <div class="col-xs-12 col-lg-12 no-padding">
 
     <div class="col-xs-12 col-sm-6 col-lg-6">
-       <?= $form->field($model, 'status')
+      <?= $form->field($model, 'owner_phone')->textInput(['maxlength' => 250]) ?>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-lg-6">
+              <?= $form->field($model, 'status')
         ->dropDownList(
              VehicleDetails::$status,
             ['prompt'=>'Select status']
         );?>
-    </div>
+    </div>    
    </div>  
    
     <div class="form-group col-xs-12 col-sm-6 col-lg-4 no-padding">

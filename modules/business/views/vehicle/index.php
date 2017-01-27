@@ -46,7 +46,8 @@ $this->params['breadcrumbs'][] = $this->title;
 			    },
  	        ],
             'vehicle_number',
-            'size',
+            'owner_name',
+            'owner_phone',
             // 'charge_per_km',
             // 'status',
 

@@ -61,27 +61,21 @@ $this->params['breadcrumbs'][] = $this->title;
  	    ],
 	[
 	'label'=>'Customer',
-    'attribute'=>"buyer",
-    'value' => 'buyers.name',
-	'filter' => ArrayHelper::map(app\modules\business\models\CustomerDetails::find()->where(['customer_type'=>2])->all(), 'id', 'name')
+        'attribute'=>"buyer"
+         ],
+	 [
+	 'label'=>'Vehicle',
+         'attribute'=>"vehicle_id",
 	  ],
-	 ['label'=>'Vehicle',
-            'attribute'=>"vehicle_id",
-            'value' => 'vehicles.name',
-	   'filter' => ArrayHelper::map(app\modules\business\models\VehicleDetails::find()->all(), 'id', 'name')            
-	  ],
-	  ['label'=>'Driver',
-	    'attribute'=>"driver_id",
-	    'value' => 'driver.name',
-	    'filter' => ArrayHelper::map(app\modules\business\models\CustomerDetails::find()->where(['customer_type'=>3])->all(), 'id', 'name')
+	  [
+	    'label'=>'Driver',
+	    'attribute'=>"driver_id"
 	  ],
 	//'kilometre',
 	//'vehicle_rent', 
 	 [
 	    'label'=>'Material',
-	    'attribute'=>"material_id",
-	    'value' => 'material.name',
-	    'filter' => ArrayHelper::map(app\modules\business\models\MaterialTypes::find()->all(), 'id', 'name')	    
+	    'attribute'=>"material_id" 
          ],
  
            // 'size',

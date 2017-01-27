@@ -9,7 +9,8 @@ use app\modules\business\models\VehicleDetails;
 use app\modules\business\models\CustomerDetails;
 use kartik\widgets\DepDrop;
 use yii\helpers\Url;
-use kartik\widgets\Select2
+use kartik\widgets\Select2;
+use kartik\typeahead\Typeahead;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\business\models\Trips */
@@ -22,7 +23,7 @@ use kartik\widgets\Select2
    <div class="vehicle-details-form">
 
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin();?>
     
     <div class="col-xs-12 col-lg-12 no-padding">
         <div class="col-xs-12 col-sm-6 col-lg-6">
@@ -45,39 +46,79 @@ use kartik\widgets\Select2
         </div>
         
         <div class="col-xs-12 col-sm-6 col-lg-6">
-        <?= $form->field($model, 'site_name')->textInput(['maxlength' => 250,'style'=>'width:400px']) ?>
-        </div>
-    </div>
-      
-    <div class="col-xs-12 col-lg-12 no-padding">
-        <div class="col-xs-12 col-sm-6 col-lg-6">
-         <?php
-            echo $form->field($model, 'buyer')->widget(Select2::classname(), [
-            'data' => ArrayHelper::map(CustomerDetails::find()->where(['status'=>1,'customer_type'=>2])->orderBy('name')->all(), 'id', 'name'),
-            'options' => ['placeholder' => 'Select Customer ...','style'=>'width:400px'],
-            'pluginOptions' => [
-            'allowClear' => true
-            ],
-            ]);
-            ?>
-        </div>
-        <div class="col-xs-12 col-sm-6 col-lg-6">
-         <?php
-            echo $form->field($model, 'vehicle_id')->widget(Select2::classname(), [
+        <?php
+            echo $form->field($model, 'vehicle_id')->widget(Typeahead::classname(), [
+                'dataset' => [
+                    [
+                        'local' => ArrayHelper::map(VehicleDetails::find()->select(['id','concat(name," - ",vehicle_number) as name'])->where(['status'=>1])->orderBy('name')->all(), 'id', 'name'),
+                        'limit' => 10
+                    ]
+                ],
+                'pluginOptions' => ['highlight' => true],
+                'options' => ['placeholder' => 'type here ...','style'=>'width:400px'],
+            ]);         
+           /* echo $form->field($model, 'vehicle_id')->widget(Select2::classname(), [
             'data' => ArrayHelper::map(VehicleDetails::find()->select(['id','concat(name," - ",vehicle_number) as name'])->where(['status'=>1])->orderBy('name')->all(), 'id', 'name'),
             'options' => ['placeholder' => 'Select Vehicle ...','style'=>'width:400px','id'=>'vehicle-id'],
             'pluginOptions' => [
             'allowClear' => true
             ],
-            ]);
-            ?>        
+            ]);*/
+            ?> 
+        </div>
+    </div>
+      
+    <div class="col-xs-12 col-lg-12 no-padding">
+        <div class="col-xs-12 col-sm-6 col-lg-6">
+        <?= $form->field($model, 'vehicle_rent')->textInput(['style'=>'width:400px']) ?>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-lg-6">
+        <?= $form->field($model, 'size')->textInput(['maxlength' => 100,'style'=>'width:400px']) ?>
+    
         
         </div>
     </div>
       
     <div class="col-xs-12 col-lg-12 no-padding">
         <div class="col-xs-12 col-sm-6 col-lg-6">
-        <?php echo $form->field($model, 'driver_id')->widget(DepDrop::classname(), 
+        <?php 
+        echo $form->field($model, 'material_id')->widget(Typeahead::classname(), [
+            'dataset' => [
+                [
+                    'local' => ArrayHelper::map(MaterialTypes::find()->where(['status'=>1])->all(), 'id', function($model, $defaultValue) {
+                    return $model->name;
+                    }
+                    ),
+                    'limit' => 10
+                ]
+            ],
+            'pluginOptions' => ['highlight' => true],
+            'options' => ['placeholder' => 'type here ...','style'=>'width:400px'],
+        ]);        
+        /*$form->field($model, 'material_id')
+        ->dropDownList(
+        ArrayHelper::map(MaterialTypes::find()->where(['status'=>1])->all(), 'id', function($model, $defaultValue) {
+        return $model->name;
+        }
+        ),
+        ['prompt'=>'Select Material','style'=>'width:400px']
+        );*/?>        
+
+        </div>
+        <div class="col-xs-12 col-sm-6 col-lg-6">
+        <?php 
+        echo $form->field($model, 'driver_id')->widget(Typeahead::classname(), [
+            'dataset' => [
+                [
+                    'local' => ArrayHelper::map(DriverDetails::find()->where(['status'=>1,'customer_type'=>3])->all(), 'id', 'name'),
+                    'limit' => 10
+                ]
+            ],
+            'pluginOptions' => ['highlight' => true],
+            'options' => ['placeholder' => 'type here ...','style'=>'width:400px'],
+        ]);          
+        
+       /* echo $form->field($model, 'driver_id')->widget(DepDrop::classname(), 
         [
         'type'=>DepDrop::TYPE_SELECT2,
         'options'=>['id'=>'driver_id','style'=>'width:400px'],
@@ -88,39 +129,67 @@ use kartik\widgets\Select2
         'placeholder'=>'Select driver',
         'url'=>Url::to(['/business/driver/driverlist'])
         ]
-        ]);
+        ]);*/
         ?>   
         </div>
-        <div class="col-xs-12 col-sm-6 col-lg-6">
-        <?= $form->field($model, 'material_id')
-        ->dropDownList(
-        ArrayHelper::map(MaterialTypes::find()->where(['status'=>1])->all(), 'id', function($model, $defaultValue) {
-        return $model->name;
-        }
-        ),
-        ['prompt'=>'Select Material','style'=>'width:400px']
-        );?>
-        </div>
     </div>
+    
+    
 
     <div class="col-xs-12 col-lg-12 no-padding">
         <div class="col-xs-12 col-sm-6 col-lg-6">
-        <?= $form->field($model, 'size')->textInput(['maxlength' => 100,'style'=>'width:400px']) ?>
+        <?= $form->field($model, 'driver_phone')->textInput(['maxlength' => 250,'style'=>'width:400px']) ?> 
         </div>
         <div class="col-xs-12 col-sm-6 col-lg-6">
-        <?= $form->field($model, 'buyer_trip_sheet_number')->textInput(['maxlength' => 20,'style'=>'width:400px']) ?>
+        <?= $form->field($model, 'lorry_owner')->textInput(['maxlength' => 250,'style'=>'width:400px']) ?>      
         </div>
     </div>
     
     <div class="col-xs-12 col-lg-12 no-padding">
- 
         <div class="col-xs-12 col-sm-6 col-lg-6">
-        <?= $form->field($model, 'kilometre')->textInput(['maxlength' => 100,'style'=>'width:400px']) ?>
+        <?= $form->field($model, 'lorry_owner_phone')->textInput(['maxlength' => 250,'style'=>'width:400px']) ?>                
         </div>
         <div class="col-xs-12 col-sm-6 col-lg-6">
-        <?= $form->field($model, 'vehicle_rent')->textInput(['style'=>'width:400px']) ?>
+         <?php
+            echo $form->field($model, 'buyer')->widget(Typeahead::classname(), [
+                'dataset' => [
+                    [
+                        'local' => ArrayHelper::map(CustomerDetails::find()->where(['status'=>1,'customer_type'=>2])->orderBy('name')->all(), 'id', 'name'),
+                        'limit' => 10
+                    ]
+                ],
+                'pluginOptions' => ['highlight' => true],
+                'options' => ['placeholder' => 'type here ...','style'=>'width:400px'],
+            ]);         
+         
+         
+            /*echo $form->field($model, 'buyer')->widget(Select2::classname(), [
+            'data' => ArrayHelper::map(CustomerDetails::find()->where(['status'=>1,'customer_type'=>2])->orderBy('name')->all(), 'id', 'name'),
+            'options' => ['placeholder' => 'Select Customer ...','style'=>'width:400px'],
+            'pluginOptions' => [
+            'allowClear' => true
+            ],
+            ]);*/
+        ?>        
         </div>
     </div>    
+    <div class="col-xs-12 col-lg-12 no-padding">
+ 
+        <div class="col-xs-12 col-sm-6 col-lg-6">
+              <?= $form->field($model, 'site_name')->textInput(['maxlength' => 100,'style'=>'width:400px']) ?> 
+        </div>
+        <div class="col-xs-12 col-sm-6 col-lg-6">
+         <?= $form->field($model, 'kilometre')->textInput(['maxlength' => 100,'style'=>'width:400px']) ?>        
+        </div>
+    </div>   
+    
+    <div class="col-xs-12 col-lg-12 no-padding">
+
+        <div class="col-xs-12 col-sm-6 col-lg-6">
+                <?= $form->field($model, 'buyer_trip_sheet_number')->textInput(['maxlength' => 20]) ?> 
+        </div>
+
+    </div>     
     
        
     <div class="form-group col-xs-12 col-sm-6 col-lg-4 no-padding">
@@ -140,4 +209,21 @@ btn-block btn-info']) ?>
 
 </div>
 </div></div>
+<script>
+$( "#trips-vehicle_id" ).change(function() {
+    $.ajax({
+        type: "POST",
+        url: "<?= Yii::$app->request->baseUrl?>/index.php/business/trips/ajax",
+        data: { vehicle_id:$( "#trips-vehicle_id" ).val()},
+        success: function(msg) {
+            var obj = $.parseJSON(msg);
+            $( "#trips-driver_id" ).val(obj.driver_name);           
+            $( "#trips-driver_phone" ).val(obj.driver_phone);     
+            $( "#trips-lorry_owner" ).val(obj.owner_name);
+            $( "#trips-lorry_owner_phone" ).val(obj.owner_phone);
+        }
+    });
+});
+
+</script>
 

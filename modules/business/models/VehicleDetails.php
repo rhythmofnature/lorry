@@ -43,6 +43,7 @@ class VehicleDetails extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'type', 'vehicle_number', 'size'], 'required'],
+            [['owner_name','owner_phone'], 'safe'],
             [['type'], 'integer'],
             [['name', 'size'], 'string', 'max' => 250],
             [['vehicle_number'], 'string', 'max' => 12],

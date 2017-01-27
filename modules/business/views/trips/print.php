@@ -37,7 +37,7 @@ use app\modules\business\models\MaterialTypes;
 <table style="width:100%;" class="inner">
 <tr>
 <td  align="left" width="50%">Vehicle:</td>
-<td align="left"><?= $model->vehicles['name']." - ".$model->vehicles['vehicle_number'] ?></td>
+<td align="left"><?= $model->vehicle_id ?></td>
 </tr>
 <tr>
 <td  align="left">Vehicle Hire:</td>
@@ -52,24 +52,28 @@ echo " (".$model->size.")";
 </tr>
 <tr>
 <td  align="left">Load:</td>
-<td align="left"><?= $model->material['name']?></td>
+<td align="left"><?= $model->material_id?></td>
 </tr>
 <tr>
 <td  align="left">Lorry Owner Name & Phone Number:</td>
 <td align="left">
-<?= $model->vehicles['size'] ?>
+<?php echo  $model->lorry_owner;
+      if($model->lorry_owner_phone) echo ",".$model->lorry_owner_phone;
+ ?>
 </td>
 </tr>
 <tr>
 <td  align="left">Lorry Driver Name & Phone Number:</td>
 <td align="left">
-<?= $model->driver['name'] ?> - <?= $model->driver['phone'] ?>
+<?php echo  $model->driver_id;
+      if($model->driver_phone) echo ",".$model->driver_phone;
+ ?>
 </td>
 </tr>
 <tr>
 <td  align="left" >Name of the party:</td>
 <td align="left" ><?php
-echo $model->buyers['name'];
+echo $model->buyer;
 ?></td>
 </tr>
 <tr>

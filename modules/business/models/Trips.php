@@ -42,9 +42,9 @@ class Trips extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['date_of_travel','buyer', 'vehicle_id', 'driver_id', 'material_id', 'size'], 'required'],
-            [['date_of_travel','ready_merchant','ready_buyer'], 'safe'],
-            [['vehicle_id', 'driver_id', 'material_id', 'measurement_type'], 'integer'],
+            [['date_of_travel'], 'required'],
+            [['date_of_travel','ready_merchant','ready_buyer','buyer', 'vehicle_id', 'driver_id', 'material_id','size','driver_phone','lorry_owner','lorry_owner_phone'], 'safe'],
+            [['measurement_type'], 'integer'],
             [['vehicle_rent', 'driver_amount', 'merchant_amount', 'buyer_amount', 'buyer_amount_total'], 'number'],
             [['size', 'kilometre'], 'string', 'max' => 100],
             [['site_name', 'site_place'], 'string', 'max' => 250],
@@ -60,17 +60,17 @@ class Trips extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'merchant'=>'Merchant',
-            'buyer'=>'Customer',
+            'buyer'=>'Name of the party',
             'date_of_travel' => 'Date Of Travel',
             'vehicle_id' => 'Vehicle',
             'driver_id' => 'Driver',
-            'material_id' => 'Material',
+            'material_id' => 'Load',
             'size' => 'Measurement (Ton)',
             'measurement_type' => 'Measurement Type',
             'site_name' => 'Site Name',
             'site_place' => 'Site Place',
             'kilometre' => 'Kilometer',
-            'vehicle_rent' => 'Amount',//Vehicle Rent
+            'vehicle_rent' => 'Vehicle Hire',//Vehicle Rent
             'driver_amount' => 'Driver Amount',
             'merchant_amount' => 'Merchant Amount',
             'buyer_amount' => 'Customer Amount',
@@ -82,134 +82,6 @@ class Trips extends \yii\db\ActiveRecord
         ];
     }
 
-	public function afterSave($insert,$changedAttributes)
-	{
-		
-		$merchant_id= $this->merchant;
-		$trip_id = $this->id;
-		$merchant_amt=$this->merchant_amount;
-		$created = $this->date_of_travel;
-		$ready_merchant = $this->ready_merchant;
-		
-		/*  ******Saving merchant details *******/
-		$merchant_obj = BalanceSheet::findOne(['customer_id'=>$merchant_id,'trip_id'=>$trip_id]);
-		if(!isset($merchant_obj->id)){
-			$merchant_obj = new BalanceSheet();
-		}
-		
-		
-		$merchant_obj->customer_id =$merchant_id;
-		$merchant_obj->trip_id =$trip_id;
-		$merchant_obj->amount =$merchant_amt;
-		if($ready_merchant=="yes"){
-                    $merchant_obj->status ='closed';
-		}else{
-                    $merchant_obj->status ='open';
-		}
-		
-		$merchant_obj->to_or_from ='to';
-		$merchant_obj->created_on =$created;
-		$merchant_obj->save();
-		
-		if($ready_merchant=="yes"){
-                    $lastTransaction=Transactions::find()->where(['customer_id'=>$merchant_id])->orderBy(['id'=>SORT_DESC])->one();
-                    
-                    $trans_obj = new Transactions();
-                    $trans_obj->customer_id =$merchant_id;
-                    $trans_obj->ivoice_amount =$merchant_amt;
-                    $trans_obj->previous_balance=0;
-                    $trans_obj->paid_amount =$merchant_amt;
-                    $trans_obj->paid_date=$created;
-                    $trans_obj->balance=0;
-                    $trans_obj->sheet_ids=$merchant_obj->id;
-                    $trans_obj->created_on=date("Y-m-d");
-                    $trans_obj->status='closed';
-                    $trans_obj->save();
-                    
-                    if(isset($lastTransaction->id)){
-//                         print_r($lastTransaction->attributes);exit;
-                        $trans_obj_new = new Transactions();
-                        $trans_obj_new->attributes =$lastTransaction->attributes;
-                        $trans_obj_new->id='';
-//                         print_r($trans_obj_new->attributes);exit;
-                        $trans_obj_new->save();
-//                         print_r($trans_obj_new->getErrors());
-                        $lastTransaction->delete();
-                    }
-                    
-		}
-		
-
-		/*  ******Saving buyers details *******/
-		$buyer_id=$this->buyer;
-		$buyer_amt=$this->buyer_amount_total;
-		$ready_buyer = $this->ready_buyer;
-		$buyer_obj = BalanceSheet::findOne(['customer_id'=>$buyer_id,'trip_id'=>$trip_id]);
-		if(!isset($buyer_obj->id)){
-			$buyer_obj = new BalanceSheet();
-		}
-		$buyer_obj->customer_id =$buyer_id;
-		$buyer_obj->trip_id =$trip_id;
-		$buyer_obj->amount =$buyer_amt;
-		if($ready_buyer=="yes"){
-                    $buyer_obj->status ='closed';
-		}else{
-                    $buyer_obj->status ='open';
-		}
-		
-		
-		$buyer_obj->to_or_from ='from';
-		$buyer_obj->created_on =$created;
-		$buyer_obj->save();
-		
-		
-		if($ready_buyer=="yes"){
-                    $lastTransaction=Transactions::find()->where(['customer_id'=>$buyer_id])->orderBy(['id'=>SORT_DESC])->one();
-                    
-                    $trans_obj = new Transactions();
-                    $trans_obj->customer_id =$buyer_id;
-                    $trans_obj->ivoice_amount =$buyer_amt;
-                    $trans_obj->previous_balance=0;
-                    $trans_obj->paid_amount =$buyer_amt;
-                    $trans_obj->paid_date=$created;
-                    $trans_obj->balance=0;
-                    $trans_obj->sheet_ids=$buyer_obj->id;
-                    $trans_obj->created_on=date("Y-m-d");
-                    $trans_obj->status='closed';
-                    $trans_obj->save();
-                    
-                    if(isset($lastTransaction->id)){
-                        $trans_obj_new = new Transactions();
-                        $trans_obj_new->attributes =$lastTransaction->attributes ;
-                        $trans_obj_new->id='';
-                        $trans_obj_new->save();
-                        $lastTransaction->delete();
-                    }
-                    
-		}
-		
-
-
-		/*  ******Saving driver details *******/
-		$driver_id=$this->driver_id;
-		$driver_amt=$this->driver_amount;
-		$driver_obj = BalanceSheet::findOne(['customer_id'=>$driver_id,'trip_id'=>$trip_id]);
-		if(!isset($driver_obj->id)){
-			$driver_obj = new BalanceSheet();
-		}
-		$driver_obj->customer_id =$driver_id;
-		$driver_obj->trip_id =$trip_id;
-		$driver_obj->amount =$driver_amt;
-		$driver_obj->status ='open';
-		$driver_obj->to_or_from ='to';
-		$driver_obj->created_on =$created;
-		$driver_obj->save();
-		
-		
-
-		
-		
-	} 
 
 	public function getVehicles()
 	{

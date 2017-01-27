@@ -40,17 +40,17 @@ $this->params['breadcrumbs'][] = $this->title;
 			[
 			'label'=>'Vehicle',
 			'attribute'=>"vehicle_id",
-			'value' => $model->vehicles['name']
+			//'value' => $model->vehicles['name']
 			],
 			[
 			'label'=>'Driver',
 			'attribute'=>"driver_id",
-			'value' => $model->driver['name']
+			//'value' => $model->driver['name']
 			],
 			[
 			'label'=>'Matrial',
 			'attribute'=>"material_id",
-			'value' => $model->material['name']
+			//'value' => $model->material['name']
 			],
 
 			[
