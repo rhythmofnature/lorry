@@ -186,7 +186,7 @@ use kartik\typeahead\Typeahead;
     <div class="col-xs-12 col-lg-12 no-padding">
 
         <div class="col-xs-12 col-sm-6 col-lg-6">
-                <?= $form->field($model, 'buyer_trip_sheet_number')->textInput(['maxlength' => 20]) ?> 
+                <?= $form->field($model, 'buyer_trip_sheet_number')->textInput() ?> 
         </div>
 
     </div>     
