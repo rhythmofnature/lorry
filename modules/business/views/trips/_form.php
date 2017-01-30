@@ -50,7 +50,7 @@ use kartik\typeahead\Typeahead;
             echo $form->field($model, 'vehicle_id')->widget(Typeahead::classname(), [
                 'dataset' => [
                     [
-                        'local' => ArrayHelper::map(VehicleDetails::find()->select(['id','concat(name," - ",vehicle_number) as name'])->where(['status'=>1])->orderBy('name')->all(), 'id', 'name'),
+                        'local' => ArrayHelper::map(VehicleDetails::find()->select(['id','vehicle_number as name'])->where(['status'=>1])->orderBy('name')->all(), 'id', 'name'),
                         'limit' => 10
                     ]
                 ],
