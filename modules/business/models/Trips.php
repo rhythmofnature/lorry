@@ -48,7 +48,7 @@ class Trips extends \yii\db\ActiveRecord
             [['vehicle_rent', 'driver_amount', 'merchant_amount', 'buyer_amount', 'buyer_amount_total'], 'number'],
             [['size', 'kilometre'], 'string', 'max' => 100],
             [['site_name', 'site_place'], 'string', 'max' => 250],
-            [['buyer_trip_sheet_number', 'seller_trip_sheet_number'], 'string', 'max' => 20]
+            [['buyer_trip_sheet_number', 'seller_trip_sheet_number'], 'string', 'max' => 200]
         ];
     }
 
